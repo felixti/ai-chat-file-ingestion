@@ -9,11 +9,11 @@ const chatSchema = z.object({
       z.object({
         id: z.string().optional(),
         role: z.enum(['user', 'assistant', 'system']),
-        content: z.string().max(4000),
+        content: z.string().max(50000),
       })
     )
     .max(100),
-  system: z.string().max(8000).optional(),
+  system: z.string().max(100000).optional(),
   model: z.string().max(100).optional(),
 });
 
