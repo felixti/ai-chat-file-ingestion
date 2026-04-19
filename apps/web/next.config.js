@@ -3,14 +3,13 @@ const nextConfig = {
   output: 'standalone',
   outputFileTracingRoot: __dirname,
   allowedDevOrigins: ['bluefin.taild2f4.ts.net', 'localhost', '127.0.0.1'],
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+  },
   async rewrites() {
-    const parserUrl = process.env.PARSER_SERVICE_URL || 'http://localhost:8000';
-    return [
-      {
-        source: '/api/convert',
-        destination: `${parserUrl}/convert`,
-      },
-    ];
+    return [];
   },
 };
 
