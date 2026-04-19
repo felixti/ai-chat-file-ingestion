@@ -33,7 +33,7 @@ jest.mock('@huggingface/transformers', () => ({
 // Mock useModels
 jest.mock('@/hooks/useModels', () => ({
   useModels: () => ({
-    models: ['gemma4:31b-cloud', 'qwen3.6-cloud', 'nemotron-3-super:cloud'],
+    models: ['gemma4:31b-cloud', 'qwen3.6:cloud', 'nemotron-3-super:cloud'],
     defaultModel: 'gemma4:31b-cloud',
     isLoading: false,
     error: null,

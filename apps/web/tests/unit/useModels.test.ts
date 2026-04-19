@@ -21,7 +21,7 @@ describe('useModels', () => {
     fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
-        models: ['gemma4:31b-cloud', 'qwen3.6-cloud', 'nemotron-3-super:cloud'],
+        models: ['gemma4:31b-cloud', 'qwen3.6:cloud', 'nemotron-3-super:cloud'],
         defaultModel: 'gemma4:31b-cloud',
       }),
     } as Response);
@@ -34,7 +34,7 @@ describe('useModels', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.models).toEqual(['gemma4:31b-cloud', 'qwen3.6-cloud', 'nemotron-3-super:cloud']);
+    expect(result.current.models).toEqual(['gemma4:31b-cloud', 'qwen3.6:cloud', 'nemotron-3-super:cloud']);
     expect(result.current.defaultModel).toBe('gemma4:31b-cloud');
     expect(result.current.error).toBeNull();
     expect(fetchMock).toHaveBeenCalledWith('/api/models');
@@ -90,7 +90,7 @@ describe('useModels', () => {
             resolve({
               ok: true,
               json: async () => ({
-                models: ['gemma4:31b-cloud', 'qwen3.6-cloud', 'nemotron-3-super:cloud'],
+                models: ['gemma4:31b-cloud', 'qwen3.6:cloud', 'nemotron-3-super:cloud'],
                 defaultModel: 'gemma4:31b-cloud',
               }),
             } as Response);
