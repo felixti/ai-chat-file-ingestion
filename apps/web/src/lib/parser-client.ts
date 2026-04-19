@@ -4,7 +4,7 @@ import { fetchWithRetry } from './fetch-with-retry';
 import { API_ROUTES } from '@shared/constants';
 
 const PARSER_URL = API_ROUTES.CONVERT;
-const UPLOAD_TIMEOUT_MS = 30_000;
+const UPLOAD_TIMEOUT_MS = 120_000;
 
 const fetchWithRetryFn = fetchWithRetry({ retries: 3, baseDelayMs: 1000, maxDelayMs: 5000 });
 
