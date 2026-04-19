@@ -1,0 +1,85 @@
+import { NextResponse } from 'next/server';
+
+interface OpenAIModel {
+  id: string;
+  object: string;
+  created: number;
+  owned_by: string;
+}
+
+interface OpenAIModelsResponse {
+  object: string;
+  data: OpenAIModel[];
+}
+
+const baseURL = process.env.LLM_BASE_URL || 'https://ollama.com/v1';
+const apiKey = process.env.LLM_API_KEY || '';
+const defaultModel = process.env.LLM_DEFAULT_MODEL || 'gemma4:31b-cloud';
+const allowlistEnv = process.env.LLM_ALLOWLIST || '';
+
+function getAllowlist(): string[] {
+  return allowlistEnv
+    .split(',')
+    .map((m) => m.trim())
+    .filter(Boolean);
+}
+
+function isCloudConfigured(): boolean {
+  // Consider it "cloud" if baseURL is not localhost and apiKey is set
+  const isLocal =
+    baseURL.includes('localhost') || baseURL.includes('127.0.0.1') || baseURL.includes('::1');
+  return !isLocal && apiKey.length > 0;
+}
+
+async function fetchModelsFromProvider(): Promise<string[] | null> {
+  try {
+    const res = await fetch(`${baseURL}/models`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+      // Abort if it takes too long
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!res.ok) {
+      console.warn(`Failed to fetch models from provider: ${res.status}`);
+      return null;
+    }
+
+    const data = (await res.json()) as OpenAIModelsResponse;
+    if (!Array.isArray(data.data)) return null;
+
+    const allModels = data.data.map((m) => m.id);
+
+    // If allowlist is configured, filter; otherwise return all
+    const allowlist = getAllowlist();
+    if (allowlist.length > 0) {
+      return allModels.filter((m) => allowlist.includes(m));
+    }
+
+    return allModels;
+  } catch (err) {
+    console.warn('Error fetching models from provider:', err);
+    return null;
+  }
+}
+
+export async function GET() {
+  // Try to fetch live models from the provider when cloud is configured
+  let models: string[] | null = null;
+  if (isCloudConfigured()) {
+    models = await fetchModelsFromProvider();
+  }
+
+  // Fall back to env allowlist
+  if (!models) {
+    models = getAllowlist();
+  }
+
+  // Ultimate fallback if nothing configured
+  if (models.length === 0) {
+    models = [defaultModel];
+  }
+
+  return NextResponse.json({ models, defaultModel });
+}

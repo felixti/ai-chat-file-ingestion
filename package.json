@@ -1,0 +1,36 @@
+{
+  "name": "ai-chat-monorepo",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "lint:web": "cd apps/web && npx eslint .",
+    "lint:parser": "cd apps/parser-service && uv run ruff check .",
+    "format:web": "cd apps/web && npx prettier --write .",
+    "format:parser": "cd apps/parser-service && uv run ruff format .",
+    "format:check:web": "cd apps/web && npx prettier --check .",
+    "typecheck:web": "cd apps/web && npx tsc --noEmit",
+    "typecheck:parser": "cd apps/parser-service && uv run mypy src/",
+    "test:web": "cd apps/web && npm test",
+    "test:parser": "cd apps/parser-service && uv run pytest tests/ -v",
+    "test:e2e": "cd apps/web && npx playwright test e2e/ --project=chromium",
+    "test:all": "npm run test:web && npm run test:parser"
+  },
+  "devDependencies": {
+    "husky": "^9.1.0",
+    "lint-staged": "^15.5.0"
+  },
+  "lint-staged": {
+    "apps/web/**/*.{ts,tsx}": [
+      "cd apps/web && npx prettier --write",
+      "cd apps/web && npx eslint --fix",
+      "cd apps/web && npx jest --findRelatedTests --passWithNoTests"
+    ],
+    "apps/web/**/*.{js,jsx,json,css,md}": [
+      "cd apps/web && npx prettier --write"
+    ],
+    "apps/parser-service/**/*.py": [
+      "cd apps/parser-service && uv run ruff check --fix",
+      "cd apps/parser-service && uv run ruff format"
+    ]
+  }
+}

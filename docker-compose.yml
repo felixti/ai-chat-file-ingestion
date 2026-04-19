@@ -1,0 +1,64 @@
+services:
+  parser-service:
+    build:
+      context: ./apps/parser-service
+      dockerfile: Dockerfile
+    container_name: ai-chat-parser
+    ports:
+      - "8000:8000"
+    environment:
+      - PARSER_HOST=0.0.0.0
+      - PARSER_PORT=8000
+      - PARSER_LOG_LEVEL=INFO
+      - PARSER_CORS_ORIGINS=http://localhost:3000
+      - PARSER_ENABLE_TELEMETRY=false
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - ai-chat-network
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: ai-chat-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PARSER_SERVICE_URL=http://parser-service:8000
+    depends_on:
+      parser-service:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ai-chat-network
+
+networks:
+  ai-chat-network:
+    driver: bridge

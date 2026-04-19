@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+echo "=== TypeScript type check ==="
+cd apps/web && npx tsc --noEmit && cd ../..
+
+echo "=== Frontend lint ==="
+cd apps/web && npx eslint . && cd ../..
+
+echo "=== Frontend tests ==="
+cd apps/web && npm test && cd ../..
+
+echo "=== Backend lint ==="
+cd apps/parser-service && ruff check . && cd ../..
+
+echo "=== Backend tests ==="
+cd apps/parser-service && python -m pytest tests/ -v && cd ../..
+
+echo "=== Frontend build ==="
+cd apps/web && npm run build && cd ../..
+
+echo ""
+echo "✅ All pre-push checks passed"

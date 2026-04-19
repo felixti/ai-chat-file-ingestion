@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npx eslint .
+
+      - name: Format check
+        run: npx prettier --check .
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run tests with coverage
+        run: npm test
+
+      - name: Build
+        run: npm run build
+        env:
+          LLM_BASE_URL: http://localhost:11434/v1
+          LLM_DEFAULT_MODEL: llama3.2
+          LLM_API_KEY: ollama
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/parser-service
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.10.0"
+
+      - name: Install dependencies
+        run: uv pip install -e ".[dev]"
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Run tests with coverage
+        run: uv run pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=90
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+
+      - name: Run E2E tests
+        run: npx playwright test e2e/ --project=chromium
+        env:
+          LLM_BASE_URL: http://localhost:11434/v1
+          LLM_DEFAULT_MODEL: llama3.2
+          LLM_API_KEY: ollama
