@@ -65,20 +65,27 @@ async function fetchModelsFromProvider(): Promise<string[] | null> {
 }
 
 export async function GET() {
-  // Try to fetch live models from the provider when cloud is configured
-  let models: string[] | null = null;
-  if (isCloudConfigured()) {
-    models = await fetchModelsFromProvider();
-  }
+  // The allowlist is the definitive source of truth for which models
+  // the user can select. Live provider fetching is used only to log
+  // which allowlisted models are actually available.
+  let models = getAllowlist();
 
-  // Fall back to env allowlist
-  if (!models) {
-    models = getAllowlist();
-  }
-
-  // Ultimate fallback if nothing configured
+  // If allowlist is empty, fall back to default model
   if (models.length === 0) {
     models = [defaultModel];
+  }
+
+  // Optionally validate against provider in the background (logging only)
+  if (isCloudConfigured()) {
+    const liveModels = await fetchModelsFromProvider();
+    if (liveModels) {
+      const unavailable = models.filter((m) => !liveModels.includes(m));
+      if (unavailable.length > 0) {
+        console.warn(
+          `[models] allowlisted models not available on provider: ${unavailable.join(', ')}`
+        );
+      }
+    }
   }
 
   return NextResponse.json({ models, defaultModel });
