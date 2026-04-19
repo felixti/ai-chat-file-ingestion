@@ -20,7 +20,7 @@ const chatSchema = z.object({
 const baseURL = process.env.LLM_BASE_URL || 'https://ollama.com/v1';
 const apiKey = process.env.LLM_API_KEY || '';
 const defaultModel = process.env.LLM_DEFAULT_MODEL || 'gemma4:31b-cloud';
-const allowlist = (process.env.LLM_ALLOWLIST || 'gemma4:31b-cloud')
+const allowlist = (process.env.LLM_ALLOWLIST || 'gemma4:31b-cloud,qwen3.6-cloud')
   .split(',')
   .map((m) => m.trim())
   .filter(Boolean);
