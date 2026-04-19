@@ -17,7 +17,7 @@ export function createLLMClient(config: LLMConfig) {
 export function getDefaultLLMConfig(): LLMConfig {
   return {
     baseURL: process.env.NEXT_PUBLIC_LLM_BASE_URL || 'http://localhost:11434/v1',
-    model: process.env.NEXT_PUBLIC_LLM_MODEL || 'llama3.2',
+    model: process.env.NEXT_PUBLIC_LLM_MODEL || 'gemma4',
     temperature: 0.7,
     maxTokens: 4096,
   };

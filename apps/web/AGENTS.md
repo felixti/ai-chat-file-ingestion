@@ -88,7 +88,7 @@ Pure functions and classes. No React dependencies.
 
 - `llm-client.ts` — Thin wrapper around `@ai-sdk/openai`.
   - `createLLMClient(config)` returns an AI SDK model provider
-  - Default config targets Ollama at `http://localhost:11434/v1` with model `llama3.2`
+  - Default config targets Ollama at `http://localhost:11434/v1` with model `gemma4`
 
 - `parser-client.ts` — `fetch` wrapper for `/api/convert`.
   - **Issue**: No `AbortController` / timeout. A slow parser response hangs indefinitely.
