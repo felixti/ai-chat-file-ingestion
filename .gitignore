@@ -58,6 +58,9 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# jest / frontend coverage
+apps/web/coverage/
 .tox/
 
 # ruff
