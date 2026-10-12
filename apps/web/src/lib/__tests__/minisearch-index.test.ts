@@ -172,9 +172,9 @@ describe('ChunkIndex', () => {
 
     it('should return empty string when both stored text and chunk lookup fail', () => {
       const miniSearchInstance = (index as any).miniSearch;
-      jest.spyOn(miniSearchInstance, 'search').mockReturnValue([
-        { id: 'ghost-id', score: 1.0, text: '' },
-      ] as any);
+      jest
+        .spyOn(miniSearchInstance, 'search')
+        .mockReturnValue([{ id: 'ghost-id', score: 1.0, text: '' }] as any);
 
       const results = index.search('anything');
       expect(results).toHaveLength(1);

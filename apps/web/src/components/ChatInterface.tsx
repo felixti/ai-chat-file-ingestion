@@ -42,7 +42,15 @@ export function ChatInterface() {
     }
   }, [defaultModel, selectedModel]);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error: chatError, setMessages } = useChat({
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    error: chatError,
+    setMessages,
+  } = useChat({
     model: selectedModel,
   });
 
@@ -67,54 +75,68 @@ export function ChatInterface() {
     console.log('[ChatInterface] chunks updated:', chunks.length);
   }, [chunks]);
 
-  const handleSubmitWithPrefilter = useCallback(async (e?: React.FormEvent<HTMLFormElement>) => {
-    const currentChunks = chunksRef.current;
-    const currentSearch = searchRef.current;
-    const currentResult = resultRef.current;
+  const handleSubmitWithPrefilter = useCallback(
+    async (e?: React.FormEvent<HTMLFormElement>) => {
+      const currentChunks = chunksRef.current;
+      const currentSearch = searchRef.current;
+      const currentResult = resultRef.current;
 
-    console.log('[chat] handleSubmitWithPrefilter called, input:', input, 'chunks.length (ref):', currentChunks.length);
-    e?.preventDefault();
-    if (!input.trim()) {
-      console.log('[chat] empty input, returning early');
-      return;
-    }
-
-    let topChunks: string[] = [];
-
-    if (currentChunks.length > 0) {
-      console.log('[chat] searching chunks for query:', input);
-      const searchResults = currentSearch(input);
-      const top5Texts = searchResults.map((r) => r.text);
-      console.log('[chat] search results:', searchResults.map((r) => ({ score: r.score, textPreview: r.text.slice(0, 120) })));
-
-      if (top5Texts.length > 0) {
-        console.log('[chat] ranking', top5Texts.length, 'chunks');
-        const ranked = await rankBySimilarity(input, top5Texts);
-        console.log('[chat] ranked chunks:', ranked.map((r) => ({ similarity: r.similarity, textPreview: r.text.slice(0, 120) })));
-        topChunks = ranked.slice(0, 3).map((r) => r.text);
-      } else {
-        console.log('[chat] search returned no results');
+      console.log(
+        '[chat] handleSubmitWithPrefilter called, input:',
+        input,
+        'chunks.length (ref):',
+        currentChunks.length
+      );
+      e?.preventDefault();
+      if (!input.trim()) {
+        console.log('[chat] empty input, returning early');
+        return;
       }
-    } else if (currentResult?.markdown) {
-      // Fallback: if chunks are empty but we have raw markdown, use it directly
-      console.log('[chat] no chunks available, falling back to raw markdown');
-      topChunks = [currentResult.markdown];
-    } else {
-      console.log('[chat] no chunks available (chunks.length === 0) and no raw markdown');
-    }
 
-    const systemMessage = buildSystemMessage(topChunks);
-    console.log('[chat] chunks used:', topChunks.length);
-    console.log('[chat] context/system message length:', systemMessage.length);
-    console.log('[chat] context/system message:', systemMessage.slice(0, 500));
-    console.log('[chat] user message:', input);
+      let topChunks: string[] = [];
 
-    handleSubmit(e, {
-      body: {
-        system: systemMessage,
-      },
-    });
-  }, [input, handleSubmit, rankBySimilarity]);
+      if (currentChunks.length > 0) {
+        console.log('[chat] searching chunks for query:', input);
+        const searchResults = currentSearch(input);
+        const top5Texts = searchResults.map((r) => r.text);
+        console.log(
+          '[chat] search results:',
+          searchResults.map((r) => ({ score: r.score, textPreview: r.text.slice(0, 120) }))
+        );
+
+        if (top5Texts.length > 0) {
+          console.log('[chat] ranking', top5Texts.length, 'chunks');
+          const ranked = await rankBySimilarity(input, top5Texts);
+          console.log(
+            '[chat] ranked chunks:',
+            ranked.map((r) => ({ similarity: r.similarity, textPreview: r.text.slice(0, 120) }))
+          );
+          topChunks = ranked.slice(0, 3).map((r) => r.text);
+        } else {
+          console.log('[chat] search returned no results');
+        }
+      } else if (currentResult?.markdown) {
+        // Fallback: if chunks are empty but we have raw markdown, use it directly
+        console.log('[chat] no chunks available, falling back to raw markdown');
+        topChunks = [currentResult.markdown];
+      } else {
+        console.log('[chat] no chunks available (chunks.length === 0) and no raw markdown');
+      }
+
+      const systemMessage = buildSystemMessage(topChunks);
+      console.log('[chat] chunks used:', topChunks.length);
+      console.log('[chat] context/system message length:', systemMessage.length);
+      console.log('[chat] context/system message:', systemMessage.slice(0, 500));
+      console.log('[chat] user message:', input);
+
+      handleSubmit(e, {
+        body: {
+          system: systemMessage,
+        },
+      });
+    },
+    [input, handleSubmit, rankBySimilarity]
+  );
 
   const hasFileContext = chunks.length > 0;
 
