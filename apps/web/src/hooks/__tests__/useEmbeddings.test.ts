@@ -317,12 +317,10 @@ describe('useEmbeddings', () => {
     });
 
     it('clears previous error before a successful rankBySimilarity call', async () => {
-      mockEmbedBatch
-        .mockRejectedValueOnce(new Error('Rank failure'))
-        .mockResolvedValueOnce([
-          { vector: [1, 0], model: 'test-model' },
-          { vector: [0.5, 0.5], model: 'test-model' },
-        ]);
+      mockEmbedBatch.mockRejectedValueOnce(new Error('Rank failure')).mockResolvedValueOnce([
+        { vector: [1, 0], model: 'test-model' },
+        { vector: [0.5, 0.5], model: 'test-model' },
+      ]);
 
       const { result } = renderHook(() => useEmbeddings());
 
@@ -360,9 +358,7 @@ describe('useEmbeddings', () => {
 
   describe('pipeline initialization errors', () => {
     it('handles getInstance error in embed', async () => {
-      (EmbeddingPipeline.getInstance as jest.Mock).mockRejectedValue(
-        new Error('Init failed')
-      );
+      (EmbeddingPipeline.getInstance as jest.Mock).mockRejectedValue(new Error('Init failed'));
 
       const { result } = renderHook(() => useEmbeddings());
 
@@ -393,9 +389,7 @@ describe('useEmbeddings', () => {
     });
 
     it('handles getInstance error in rankBySimilarity', async () => {
-      (EmbeddingPipeline.getInstance as jest.Mock).mockRejectedValue(
-        new Error('Rank init failed')
-      );
+      (EmbeddingPipeline.getInstance as jest.Mock).mockRejectedValue(new Error('Rank init failed'));
 
       const { result } = renderHook(() => useEmbeddings());
 

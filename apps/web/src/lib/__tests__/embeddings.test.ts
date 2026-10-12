@@ -27,9 +27,7 @@ describe('cosineSimilarity', () => {
   });
 
   it('throws for different length vectors', () => {
-    expect(() => cosineSimilarity([1, 2], [1, 2, 3])).toThrow(
-      'Vectors must have the same length'
-    );
+    expect(() => cosineSimilarity([1, 2], [1, 2, 3])).toThrow('Vectors must have the same length');
   });
 
   it('returns correct value for proportional realistic embeddings', () => {
@@ -78,11 +76,9 @@ describe('EmbeddingPipeline', () => {
     it('loads the model on first call', async () => {
       await EmbeddingPipeline.getInstance();
       expect(mockPipeline).toHaveBeenCalledTimes(1);
-      expect(mockPipeline).toHaveBeenCalledWith(
-        'feature-extraction',
-        'Xenova/all-MiniLM-L6-v2',
-        { dtype: 'fp32' }
-      );
+      expect(mockPipeline).toHaveBeenCalledWith('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+        dtype: 'fp32',
+      });
     });
 
     it('does not reload the model on subsequent calls', async () => {
@@ -127,9 +123,7 @@ describe('EmbeddingPipeline', () => {
 
     it('throws if pipeline not loaded', async () => {
       const pipeline = new EmbeddingPipeline();
-      await expect(pipeline.embed('test')).rejects.toThrow(
-        'Embedding pipeline not loaded'
-      );
+      await expect(pipeline.embed('test')).rejects.toThrow('Embedding pipeline not loaded');
     });
   });
 
@@ -165,10 +159,10 @@ describe('EmbeddingPipeline', () => {
       const pipeline = await EmbeddingPipeline.getInstance();
       await pipeline.embedBatch(['hello', 'world']);
 
-      expect(mockExtractor).toHaveBeenCalledWith(
-        ['hello', 'world'],
-        { pooling: 'mean', normalize: true }
-      );
+      expect(mockExtractor).toHaveBeenCalledWith(['hello', 'world'], {
+        pooling: 'mean',
+        normalize: true,
+      });
     });
 
     it('returns empty array for empty input', async () => {
@@ -180,9 +174,7 @@ describe('EmbeddingPipeline', () => {
 
     it('throws if pipeline not loaded', async () => {
       const pipeline = new EmbeddingPipeline();
-      await expect(pipeline.embedBatch(['test'])).rejects.toThrow(
-        'Embedding pipeline not loaded'
-      );
+      await expect(pipeline.embedBatch(['test'])).rejects.toThrow('Embedding pipeline not loaded');
     });
   });
 

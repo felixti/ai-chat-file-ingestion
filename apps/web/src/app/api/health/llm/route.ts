@@ -8,15 +8,14 @@ export async function GET() {
 
   // Check if API key looks like a placeholder
   const isPlaceholderKey =
-    apiKey === '' ||
-    apiKey === 'your-ollama-api-key-here' ||
-    apiKey === 'ollama';
+    apiKey === '' || apiKey === 'your-ollama-api-key-here' || apiKey === 'ollama';
 
   if (isPlaceholderKey) {
     return NextResponse.json(
       {
         status: 'misconfigured',
-        error: 'LLM_API_KEY is not set or is a placeholder. Set your real Ollama Cloud API key in .env',
+        error:
+          'LLM_API_KEY is not set or is a placeholder. Set your real Ollama Cloud API key in .env',
         baseURL,
         model: defaultModel,
         requestId,

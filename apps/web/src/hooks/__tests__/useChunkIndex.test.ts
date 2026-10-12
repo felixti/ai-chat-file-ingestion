@@ -266,10 +266,7 @@ describe('useChunkIndex', () => {
         result.current.indexMarkdown('bad markdown');
       });
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        '[useChunkIndex] chunking failed:',
-        error
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('[useChunkIndex] chunking failed:', error);
       consoleErrorSpy.mockRestore();
     });
 

@@ -114,7 +114,9 @@ Connection pooling improves throughput for high-traffic applications.
     expect(rankings[0].text).toContain('React');
     // If there's only 1 result, similarity equals itself; if multiple, highest > lowest
     if (rankings.length > 1) {
-      expect(rankings[0].similarity).toBeGreaterThanOrEqual(rankings[rankings.length - 1].similarity);
+      expect(rankings[0].similarity).toBeGreaterThanOrEqual(
+        rankings[rankings.length - 1].similarity
+      );
     }
   });
 
