@@ -1,0 +1,11 @@
+toolchain: { node: "22", python: "3.12" }
+env:
+  SHARP_IGNORE_GLOBAL_LIBVIPS: "1"
+  CI: "true"
+verify:
+  - name: web
+    cwd: apps/web
+    run: [npm ci, "npx eslint .", "npx prettier --check .", "npx tsc --noEmit", npm test]
+  - name: parser
+    cwd: apps/parser-service
+    run: ["uv sync --python 3.12", "uv run ruff check .", "uv run pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=90"]
